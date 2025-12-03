@@ -1,8 +1,8 @@
-import { match, P } from "ts-pattern";
+import { match, P } from "ts-pattern"
 
 export type GreetingVariant =
-	| { readonly kind: "effect" }
-	| { readonly kind: "named"; readonly name: string };
+  | { readonly kind: "effect" }
+  | { readonly kind: "named"; readonly name: string }
 
 /**
  * Formats a greeting message without side effects.
@@ -15,7 +15,7 @@ export type GreetingVariant =
  * @complexity O(1) time / O(1) space
  */
 export const formatGreeting = (variant: GreetingVariant): string =>
-	match(variant)
-		.with({ kind: "effect" }, () => "Hello from Effect!")
-		.with({ kind: "named", name: P.select() }, (name) => `Hello, ${name}!`)
-		.exhaustive();
+  match(variant)
+    .with({ kind: "effect" }, () => "Hello from Effect!")
+    .with({ kind: "named", name: P.select() }, (name) => `Hello, ${name}!`)
+    .exhaustive()

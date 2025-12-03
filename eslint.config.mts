@@ -5,15 +5,25 @@ import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 import vitest from "eslint-plugin-vitest";
 import suggestMembers from "@ton-ai-core/eslint-plugin-suggest-members";
+import sonarjs from "eslint-plugin-sonarjs";
+import unicorn from "eslint-plugin-unicorn";
+import * as effectEslint from "@effect/eslint-plugin";
+import { fixupPluginRules } from "@eslint/compat";
+import codegen from "eslint-plugin-codegen";
+import importPlugin from "eslint-plugin-import";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import sortDestructureKeys from "eslint-plugin-sort-destructure-keys";
 import globals from "globals";
 import eslintCommentsConfigs from "@eslint-community/eslint-plugin-eslint-comments/configs";
 
 export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
+  effectEslint.configs.dprint,
   suggestMembers.configs.recommended,
   eslintCommentsConfigs.recommended,
   {
+    name: "analyzers",
     languageOptions: {
       parser: tseslint.parser,
 	  globals: { ...globals.node, ...globals.browser },
@@ -22,8 +32,47 @@ export default defineConfig(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+	plugins: {
+		sonarjs,
+		unicorn,
+		import: fixupPluginRules(importPlugin),
+		"sort-destructure-keys": sortDestructureKeys,
+		"simple-import-sort": simpleImportSort,
+		codegen,
+	},
 	files: ["**/*.ts"],
+	settings: {
+		"import/parsers": {
+			"@typescript-eslint/parser": [".ts", ".tsx"],
+		},
+		"import/resolver": {
+			typescript: {
+				alwaysTryTypes: true,
+			},
+		},
+	},
 	rules: {
+		...sonarjs.configs.recommended.rules,
+		...unicorn.configs.recommended.rules,
+		"codegen/codegen": "error",
+		"import/first": "error",
+		"import/newline-after-import": "error",
+		"import/no-duplicates": "error",
+		"import/no-unresolved": "off",
+		"import/order": "off",
+		"simple-import-sort/imports": "off",
+		"sort-destructure-keys/sort-destructure-keys": "error",
+		"no-fallthrough": "off",
+		"no-irregular-whitespace": "off",
+		"object-shorthand": "error",
+		"prefer-destructuring": "off",
+		"sort-imports": "off",
+		"no-unused-vars": "off",
+		"prefer-rest-params": "off",
+		"prefer-spread": "off",
+		"unicorn/prefer-top-level-await": "off",
+		"unicorn/prevent-abbreviations": "off",
+		"unicorn/no-null": "off",
 		complexity: ["error", 8],
 		"max-lines-per-function": [
 			"error",
@@ -43,15 +92,6 @@ export default defineConfig(
 			allowAny: false,
 			allowRegExp: false
 		}],
-		"@typescript-eslint/ban-ts-comment": [
-			"error",
-			{
-				"ts-ignore": true,
-				"ts-nocheck": true,
-				"ts-expect-error": true,
-				"ts-check": true,
-			},
-		],
 		"@eslint-community/eslint-comments/no-use": "error",
 		"@eslint-community/eslint-comments/no-unlimited-disable": "error",
 		"@eslint-community/eslint-comments/disable-enable-pair": "error",
@@ -101,6 +141,10 @@ export default defineConfig(
 					message:
 						"Запрещены Promise.* — используй комбинаторы Effect (all, forEach, etc.).",
 				},
+				{
+					selector: "CallExpression[callee.property.name='push'] > SpreadElement.arguments",
+					message: "Do not use spread arguments in Array.push",
+				},
 		],
 		"@typescript-eslint/no-restricted-types": [
 				"error",
@@ -128,6 +172,39 @@ export default defineConfig(
 			"error",
 			{ allowThrowingUnknown: false, allowThrowingAny: false },
 		],
+		"@typescript-eslint/array-type": ["warn", {
+			default: "generic",
+			readonly: "generic"
+		}],
+		"@typescript-eslint/member-delimiter-style": 0,
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"@typescript-eslint/ban-types": "off",
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-empty-interface": "off",
+		"@typescript-eslint/consistent-type-imports": "warn",
+		"@typescript-eslint/no-unused-vars": ["error", {
+			argsIgnorePattern: "^_",
+			varsIgnorePattern: "^_"
+		}],
+		"@typescript-eslint/ban-ts-comment": "off",
+		"@typescript-eslint/camelcase": "off",
+		"@typescript-eslint/explicit-function-return-type": "off",
+		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"@typescript-eslint/interface-name-prefix": "off",
+		"@typescript-eslint/no-array-constructor": "off",
+		"@typescript-eslint/no-use-before-define": "off",
+		"@typescript-eslint/no-namespace": "off",
+		"@effect/dprint": ["error", {
+			config: {
+				indentWidth: 2,
+				lineWidth: 120,
+				semiColons: "asi",
+				quoteStyle: "alwaysDouble",
+				trailingCommas: "never",
+				operatorPosition: "maintain",
+				"arrowFunction.useParentheses": "force"
+			}
+		}]
 	}
   },
   {

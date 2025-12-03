@@ -1,4 +1,4 @@
-import { match, P } from "ts-pattern"
+import { Match } from "effect"
 
 export type GreetingVariant =
   | { readonly kind: "effect" }
@@ -15,7 +15,8 @@ export type GreetingVariant =
  * @complexity O(1) time / O(1) space
  */
 export const formatGreeting = (variant: GreetingVariant): string =>
-  match(variant)
-    .with({ kind: "effect" }, () => "Hello from Effect!")
-    .with({ kind: "named", name: P.select() }, (name) => `Hello, ${name}!`)
-    .exhaustive()
+  Match.value(variant).pipe(
+    Match.when({ kind: "effect" }, () => "Hello from Effect!"),
+    Match.when({ kind: "named" }, ({ name }) => `Hello, ${name}!`),
+    Match.exhaustive
+  )

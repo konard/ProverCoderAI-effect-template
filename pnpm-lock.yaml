@@ -50,9 +50,6 @@ importers:
       ts-morph:
         specifier: ^27.0.2
         version: 27.0.2
-      ts-pattern:
-        specifier: ^5.9.0
-        version: 5.9.0
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.8

@@ -62,8 +62,7 @@
     "@effect/typeclass": "^0.38.0",
     "@effect/workflow": "^0.15.1",
     "effect": "^3.19.8",
-    "ts-morph": "^27.0.2",
-    "ts-pattern": "^5.9.0"
+    "ts-morph": "^27.0.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

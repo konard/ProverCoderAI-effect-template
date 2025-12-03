@@ -58,6 +58,9 @@ export default defineConfig(
 	rules: {
 		...sonarjs.configs.recommended.rules,
 		...unicorn.configs.recommended.rules,
+		"no-restricted-imports": ["error", {
+			paths: ["ts-pattern"],
+		}],
 		"codegen/codegen": "error",
 		"import/first": "error",
 		"import/newline-after-import": "error",
@@ -110,14 +113,15 @@ export default defineConfig(
 					selector: "SwitchStatement",
 					message: [
 						"Switch statements are forbidden in functional programming paradigm.",
-						"How to fix: Use ts-pattern match() instead.",
+						"How to fix: Use Effect.Match instead.",
 						"Example:",
-						"  import { match } from 'ts-pattern';",
+						"  import { Match } from 'effect';",
 						"  type Item = { type: 'this' } | { type: 'that' };",
-						"  const result = match(item)",
-						"    .with({ type: 'this' }, (it) => processThis(it))",
-						"    .with({ type: 'that' }, (it) => processThat(it))",
-						"    .exhaustive();",
+						"  const result = Match.value(item).pipe(",
+						"    Match.when({ type: 'this' }, (it) => processThis(it)),",
+						"    Match.when({ type: 'that' }, (it) => processThat(it)),",
+						"    Match.exhaustive,",
+						"  );",
 					].join("\n"),
 				},
 				{

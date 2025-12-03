@@ -10,7 +10,7 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "changeset": "changeset",
-    "changeset-publish": "changeset publish",
+    "changeset-publish": "node -e \"if (!process.env.NPM_TOKEN) { console.log('Skipping publish: NPM_TOKEN is not set'); process.exit(0); }\" && changeset publish",
     "changeset-version": "changeset version",
     "lint": "npx @ton-ai-core/vibecode-linter src/",
     "check": "pnpm run typecheck",

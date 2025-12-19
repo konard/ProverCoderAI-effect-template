@@ -18,13 +18,15 @@ export default defineConfig({
 		target: "node20",
 		outDir: "dist",
 		sourcemap: true,
-		lib: {
-			entry: "src/app/main.ts",
-			formats: ["es"],
-			fileName: "main",
-		},
+		ssr: "src/app/main.ts",
 		rollupOptions: {
-			external: [],
+			output: {
+				format: "es",
+				entryFileNames: "main.js",
+			},
 		},
+	},
+	ssr: {
+		target: "node",
 	},
 });

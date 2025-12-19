@@ -2,6 +2,8 @@ import { describe, expect, it } from "@effect/vitest"
 import { Effect } from "effect"
 import { vi } from "vitest"
 
+import { program } from "../../src/app/program.js"
+
 const withLogSpy = Effect.acquireRelease(
   Effect.sync(() => vi.spyOn(console, "log").mockImplementation(() => {})),
   (spy) =>
@@ -15,7 +17,6 @@ const withArgv = (nextArgv: ReadonlyArray<string>) =>
     Effect.sync(() => {
       const previous = process.argv
       process.argv = [...nextArgv]
-      vi.resetModules()
       return previous
     }),
     (previous) =>
@@ -24,15 +25,13 @@ const withArgv = (nextArgv: ReadonlyArray<string>) =>
       })
   )
 
-const importMain = Effect.tryPromise(() => import("../../src/app/main.js"))
-
 describe("main program", () => {
   it.effect("logs default greeting when no args", () =>
     Effect.scoped(
       Effect.gen(function*(_) {
         const logSpy = yield* _(withLogSpy)
         yield* _(withArgv(["node", "main"]))
-        yield* _(importMain)
+        yield* _(program)
         yield* _(Effect.sync(() => {
           expect(logSpy).toHaveBeenCalledTimes(1)
           expect(logSpy).toHaveBeenLastCalledWith("Hello from Effect!")
@@ -45,7 +44,7 @@ describe("main program", () => {
       Effect.gen(function*(_) {
         const logSpy = yield* _(withLogSpy)
         yield* _(withArgv(["node", "main", "Alice"]))
-        yield* _(importMain)
+        yield* _(program)
         yield* _(Effect.sync(() => {
           expect(logSpy).toHaveBeenCalledTimes(1)
           expect(logSpy).toHaveBeenLastCalledWith("Hello, Alice!")

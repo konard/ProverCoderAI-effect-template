@@ -4,7 +4,9 @@
   "private": true,
   "description": "Monorepo workspace for effect-template",
   "packageManager": "pnpm@10.24.0",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "build": "pnpm --filter @effect-template/app build",
     "dev": "pnpm --filter @effect-template/app dev",

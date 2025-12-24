@@ -20,6 +20,19 @@ const codegenPlugin = fixupPluginRules(
 	codegen as unknown as Parameters<typeof fixupPluginRules>[0],
 );
 
+const noFetchExample = [
+	"Пример:",
+	"  import { FetchHttpClient, HttpClient } from \"@effect/platform\"",
+	"  import { Effect } from \"effect\"",
+	"  const program = Effect.gen(function* () {",
+	"    const client = yield* HttpClient.HttpClient",
+	"    return yield* client.get(`${api}/robots`)",
+	"  }).pipe(",
+	"    Effect.scoped,",
+	"    Effect.provide(FetchHttpClient.layer)",
+	"  )",
+].join("\n");
+
 export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
@@ -117,6 +130,40 @@ export default defineConfig(
 				{
 					selector: "TSUnknownKeyword",
 					message: "Запрещено 'unknown'.",
+				},
+				// CHANGE: запрет прямого fetch в коде
+				// WHY: enforce Effect-TS httpClient as единственный источник сетевых эффектов
+				// QUOTE(ТЗ): "Вместо fetch должно быть всегда написано httpClient от библиотеки Effect-TS"
+				// REF: user-msg-1
+				// SOURCE: n/a
+				// FORMAT THEOREM: ∀call ∈ Calls: callee(call)=fetch → lint_error(call)
+				// PURITY: SHELL
+				// EFFECT: Effect<never, never, never>
+				// INVARIANT: direct fetch calls are forbidden
+				// COMPLEXITY: O(1)
+				{
+					selector: "CallExpression[callee.name='fetch']",
+					message: `Запрещён fetch — используй HttpClient (Effect-TS).\n${noFetchExample}`,
+				},
+				{
+					selector:
+						"CallExpression[callee.object.name='window'][callee.property.name='fetch']",
+					message: `Запрещён window.fetch — используй HttpClient (Effect-TS).\n${noFetchExample}`,
+				},
+				{
+					selector:
+						"CallExpression[callee.object.name='globalThis'][callee.property.name='fetch']",
+					message: `Запрещён globalThis.fetch — используй HttpClient (Effect-TS).\n${noFetchExample}`,
+				},
+				{
+					selector:
+						"CallExpression[callee.object.name='self'][callee.property.name='fetch']",
+					message: `Запрещён self.fetch — используй HttpClient (Effect-TS).\n${noFetchExample}`,
+				},
+				{
+					selector:
+						"CallExpression[callee.object.name='global'][callee.property.name='fetch']",
+					message: `Запрещён global.fetch — используй HttpClient (Effect-TS).\n${noFetchExample}`,
 				},
 				{
 					selector: "TryStatement",

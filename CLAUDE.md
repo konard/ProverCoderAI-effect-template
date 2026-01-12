@@ -265,3 +265,16 @@ describe("Message invariants", () => {
 Каждый эффект — это контролируемое взаимодействие с реальным миром.
 
 ПРИНЦИП: Сначала формализуем, потом программируем.
+
+---
+
+Issue to solve: https://github.com/ProverCoderAI/effect-template/issues/3
+Your prepared branch: issue-3-af44bbcebf88
+Your prepared working directory: /tmp/gh-issue-solver-1768226868227
+Your forked repository: konard/ProverCoderAI-effect-template
+Original repository (upstream): ProverCoderAI/effect-template
+
+Proceed.
+
+
+Run timestamp: 2026-01-12T14:07:53.976Z
